@@ -1014,9 +1014,8 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
   }
 }
 
-template<typename Dtype>
-void Net<Dtype>::CopyTrainedLayersFrom(const string trained_filename) {
-#ifdef USE_HDF5
+template <typename Dtype>
+void Net<Dtype>::CopyTrainedLayersFrom(const string& trained_filename) {
   if (H5Fis_hdf5(trained_filename.c_str())) {
     CopyTrainedLayersFromHDF5(trained_filename);
   } else {
@@ -1029,14 +1028,14 @@ void Net<Dtype>::CopyTrainedLayersFrom(const string trained_filename) {
 
 template <typename Dtype>
 void Net<Dtype>::CopyTrainedLayersFromBinaryProto(
-    const string trained_filename) {
+    const string& trained_filename) {
   NetParameter param;
   ReadNetParamsFromBinaryFileOrDie(trained_filename, &param);
   CopyTrainedLayersFrom(param);
 }
 
 template <typename Dtype>
-void Net<Dtype>::CopyTrainedLayersFromHDF5(const string trained_filename) {
+void Net<Dtype>::CopyTrainedLayersFromHDF5(const string& trained_filename) {
 #ifdef USE_HDF5
   hid_t file_hid = H5Fopen(trained_filename.c_str(), H5F_ACC_RDONLY,
                            H5P_DEFAULT);
@@ -1174,6 +1173,7 @@ void Net<Dtype>::QuantizerToProto(NetParameter* param) const {
 
 template<typename Dtype>
 void Net<Dtype>::ToHDF5(const string& filename, bool write_diff) const {
+// This code is taken from https://github.com/sh1r0/caffe-android-lib
 #ifdef USE_HDF5
   hid_t file_hid = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT,
       H5P_DEFAULT);
