@@ -1037,12 +1037,11 @@ BOOST_PYTHON_MODULE(_caffe) {
     .add_property("quant_mode", &NetBase::quant_mode, &NetBase::set_quant_mode)
     .def("clear_param_diffs", &NetBase::ClearParamDiffs)
     // The cast is to select a particular overload.
-    .def("copy_from", static_cast<void (Net<Dtype>::*)(const string&)>(
-        &Net<Dtype>::CopyTrainedLayersFrom))
-    .def("share_with", &Net<Dtype>::ShareTrainedLayersWith)
-    .add_property("_blob_loss_weights", bp::make_function(
-        &Net<Dtype>::blob_loss_weights, bp::return_internal_reference<>()))
-    .def("_bottom_ids", bp::make_function(&Net<Dtype>::bottom_ids,
+    .def("copy_from", static_cast<void (NetBase::*)(const string)>(
+        &NetBase::CopyTrainedLayersFrom))
+    .def("share_with", &NetBase::ShareTrainedLayersWith)
+    .add_property("_blob_loss_weights", &Net_get_blob_loss_weights)
+    .def("_bottom_ids", bp::make_function(&NetBase::bottom_ids,
         bp::return_value_policy<bp::copy_const_reference>()))
     .def("_top_ids", bp::make_function(&NetBase::top_ids,
         bp::return_value_policy<bp::copy_const_reference>()))

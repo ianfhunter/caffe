@@ -39,12 +39,14 @@ void InnerProductLayer<Dtype, MItype, MOtype>::LayerSetUp(
       weight_shape[0] = N_;
       weight_shape[1] = K_;
     }
-    this->blobs_[0].reset(new Blob<Dtype>(weight_shape));
-    // fill the weights
-    shared_ptr<Filler<Dtype> > weight_filler(GetFiller<Dtype>(
-        this->layer_param_.inner_product_param().weight_filler()));
-    weight_filler->Fill(this->blobs_[0].get());
-    // If necessary, initialize and fill the bias term
+    this->blobs_[0].reset(new Blob<Dtype>(weight_shape, this->device_));
+    // fill the weights (for float types only)
+    if (is_float_type<Dtype>()) {
+      shared_ptr<Filler<Dtype> > weight_filler(GetFiller<Dtype>(
+            this->layer_param_.inner_product_param().weight_filler()));
+      weight_filler->Fill(this->blobs_[0].get());
+    }
+    // If necessary, intiialize and fill the bias term
     if (bias_term_) {
       vector<int_tp> bias_shape(1, N_);
       this->blobs_[1].reset(new Blob<Dtype>(bias_shape, this->device_));

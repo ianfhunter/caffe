@@ -23,81 +23,16 @@ class NetBase {
     return param_.data_type();
   }
 
-  /**
-   * The From and To variants of Forward and Backward operate on the
-   * (topological) ordering by which the net is specified. For general DAG
-   * networks, note that (1) computing from one layer to another might entail
-   * extra computation on unrelated branches, and (2) computation starting in
-   * the middle may be incorrect if all of the layers of a fan-in are not
-   * included.
-   */
-  Dtype ForwardFromTo(int start, int end);
-  Dtype ForwardFrom(int start);
-  Dtype ForwardTo(int end);
-  /// @brief DEPRECATED; set input blobs then use Forward() instead.
-  const vector<Blob<Dtype>*>& Forward(const vector<Blob<Dtype>* > & bottom,
-      Dtype* loss = NULL);
-
-  /**
-   * @brief Zeroes out the diffs of all net parameters.
-   *        Should be run before Backward.
-   */
-  void ClearParamDiffs();
-
-  /**
-   * The network backward should take no input and output, since it solely
-   * computes the gradient w.r.t the parameters, and the data has already been
-   * provided during the forward pass.
-   */
-  void Backward();
-  void BackwardFromTo(int start, int end);
-  void BackwardFrom(int start);
-  void BackwardTo(int end);
-
-  /**
-   * @brief Reshape all layers from bottom to top.
-   *
-   * This is useful to propagate changes to layer sizes without running
-   * a forward pass, e.g. to compute output feature size.
-   */
-  void Reshape();
-
-  Dtype ForwardBackward() {
-    Dtype loss;
-    Forward(&loss);
-    Backward();
-    return loss;
-  }
-
-  /// @brief Updates the network weights based on the diff values computed.
-  void Update();
-  /**
-   * @brief Shares weight data of owner blobs with shared blobs.
-   *
-   * Note: this is called by Net::Init, and thus should normally not be
-   * called manually.
-   */
-  void ShareWeights();
-
-  /**
-   * @brief For an already initialized net, implicitly copies (i.e., using no
-   *        additional memory) the pre-trained layers from another Net.
-   */
-  void ShareTrainedLayersWith(const Net* other);
-  // For an already initialized net, CopyTrainedLayersFrom() copies the already
-  // trained layers from another net parameter instance.
-  /**
-   * @brief For an already initialized net, copies the pre-trained layers from
-   *        another Net.
-   */
-  void CopyTrainedLayersFrom(const NetParameter& param);
-  void CopyTrainedLayersFrom(const string& trained_filename);
-  void CopyTrainedLayersFromBinaryProto(const string& trained_filename);
-  void CopyTrainedLayersFromHDF5(const string& trained_filename);
-  /// @brief Writes the net to a proto.
-  void ToProto(NetParameter* param, bool write_diff = false) const;
-  /// @brief Writes the net to an HDF5 file.
-  void ToHDF5(const string& filename, bool write_diff = false) const;
+  virtual void Reshape() = 0;
+  virtual void Update() = 0;
+  virtual void ShareWeights() = 0;
+  virtual void ShareTrainedLayersWith(const NetBase* other) = 0;
+  virtual void CopyTrainedLayersFrom(const NetParameter& param) = 0;
+  virtual void CopyTrainedLayersFrom(const string trained_filename) = 0;
+  virtual void CopyTrainedLayersFromBinaryProto(
+                                          const string trained_filename) = 0;
+  virtual void CopyTrainedLayersFromHDF5(const string trained_filename) = 0;
+  virtual void ClearParamDiffs() = 0;
 
   /// @brief returns the network name.
   inline const string& name() const {

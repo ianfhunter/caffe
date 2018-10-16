@@ -70,7 +70,8 @@ class PoolingLayer : public Layer<Dtype, MItype, MOtype> {
 
   bool use_skernel_;
   bool global_pooling_;
-  PoolingParameter_RoundMode round_mode_;
+
+  int_tp max_top_blobs_;
   Blob<Dtype> rand_idx_;
   Blob<int_tp> max_idx_;
 };
