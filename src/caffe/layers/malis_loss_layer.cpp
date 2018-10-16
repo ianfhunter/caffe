@@ -1,3 +1,4 @@
+#ifdef USE_OPENCV
 #include <boost/pending/disjoint_sets.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -457,3 +458,4 @@ REGISTER_LAYER_CLASS_INST(MalisLoss, (float), (float), (float));
 REGISTER_LAYER_CLASS_INST(MalisLoss, (double), (double), (double));
 
 }  // namespace caffe
+#endif  // USE_OPENCV
