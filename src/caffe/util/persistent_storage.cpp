@@ -12,7 +12,7 @@
 #include <comdef.h>
 #endif  // _WIN32 || _WIN64
 
-#ifdef defined(__APPLE__) || defined(__MACH__)
+#if defined(__APPLE__) || defined(__MACH__)
 #include <CoreServices/CoreServices.h>
 #endif  // __APPLE__ || __MACH__
 
