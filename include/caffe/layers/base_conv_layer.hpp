@@ -39,6 +39,11 @@ class BaseConvolutionLayer : public Layer<Dtype, MItype, MOtype> {
 #ifndef CPU_ONLY
   shared_ptr<Blob<Dtype> > col_buffer();
   void unlock_col_buffer();
+
+  void forward_gpu_gemm(Dtype*, const Dtype*);
+  void forward_gpu_bias(Dtype*, const Dtype*);
+  void backward_gpu_gemm(Dtype*, const Dtype*);
+  void backward_gpu_bias(Dtype*, const Dtype*);
 #endif
 
   /// @brief The spatial dimensions of the input.
