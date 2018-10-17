@@ -321,8 +321,6 @@ void BaseConvolutionLayer<Dtype>::backward_cpu_bias(Dtype* bias,
       input, bias_multiplier_.cpu_data(), 1., bias);
 }
 
-#ifndef CPU_ONLY
-
 template <typename Dtype>
 void BaseConvolutionLayer<Dtype>::forward_gpu_gemm(const Dtype* input,
     const Dtype* weights, Dtype* output, bool skip_im2col) {
@@ -389,8 +387,6 @@ void BaseConvolutionLayer<Dtype>::backward_gpu_bias(Dtype* bias,
   caffe_gpu_gemv<Dtype>(CblasNoTrans, num_output_, out_spatial_dim_, 1.,
       input, bias_multiplier_.gpu_data(), 1., bias);
 }
-
-#endif  // !CPU_ONLY
 
 INSTANTIATE_CLASS(BaseConvolutionLayer);
 
