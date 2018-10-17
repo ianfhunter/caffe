@@ -1,6 +1,8 @@
 #ifndef CAFFE_PYTHON_LAYER_HPP_
 #define CAFFE_PYTHON_LAYER_HPP_
 
+#ifdef WITH_PYTHON_LAYER
+
 #include <boost/python.hpp>
 #include <vector>
 
@@ -65,5 +67,7 @@ class PythonLayer : public Layer<Dtype, MItype, MOtype> {
 };
 
 }  // namespace caffe
+
+#endif  // WITH_PYTHON_LAYER
 
 #endif  // CAFFE_PYTHON_LAYER_HPP_
