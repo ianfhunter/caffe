@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from prebuild_common import variant_types, pointer_variant_types, variant_enable_flags, proto_types, float_types, float_types_no_half, unsigned_int_types
 

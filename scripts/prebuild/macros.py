@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from prebuild_common import variant_types, pointer_variant_types, variant_enable_flags, proto_types
 
@@ -58,7 +60,7 @@ for i in range(0, len(variant_types)):
         header.write('\n')
     else:
         header.write('\\\n')
-   
+
 header.write('#define PROTO_TYPES\\\n')
 for i in range(0, len(list(proto_types.keys()))):
     header.write('  (' + list(proto_types.keys())[i] + ')')
@@ -66,7 +68,7 @@ for i in range(0, len(list(proto_types.keys()))):
         header.write('\n')
     else:
         header.write('\\\n')
-             
+
 header.write('#define POINTER_VARIANT_TYPES\\\n')
 for i in range(0, len(pointer_variant_types)):
     header.write('  (' + pointer_variant_types[i] + ')')
@@ -453,4 +455,4 @@ header.write('  const vector<bool>& propagate_down,\\\n')
 header.write('  const vector<Blob<MItype>*>& bottom) { NO_GPU; }\n')
 header.write('#endif\n')
 
-header.close() 
+header.close()

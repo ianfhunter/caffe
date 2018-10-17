@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import os
 import subprocess
@@ -46,15 +48,15 @@ def scan_includes(line):
         second_quote = line.find('"', first_quote + 1)
         first_bracket = line.find('<')
         second_bracket = line.find('>', first_bracket + 1)
-        
+
         cut_start = max(first_quote, first_bracket) + 1
         cut_end = max(second_quote, second_bracket)
 
         standard_include_name = line[cut_start : cut_end]
-        
+
         if len(standard_include_name) == 0:
             return
-        
+
         head, tail = os.path.split(standard_include_name)
         if not tail in nvrtc_header_file_names and not tail in args.header_exclude_names:
             for search_path in header_search_paths:
@@ -63,7 +65,7 @@ def scan_includes(line):
                         nvrtc_header_file_names.append(standard_include_name)
                         nvrtc_header_files.append(os.path.join(root, filename))
                         return
-    
+
 
 
 header = open(args.output_dir + '/cuda_nvrtc_headers.hpp', 'w')
