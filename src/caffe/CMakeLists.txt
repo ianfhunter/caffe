@@ -1,6 +1,6 @@
 # generate macro headers
 caffe_prebuild_macros_py(${macro_gen_folder})
-  list(APPEND pre_build_srcs ${macro_gen_folder}/macros.hpp)
+list(APPEND pre_build_srcs ${macro_gen_folder}/macros.hpp)
 
 if(BUILD_python)
   caffe_prebuild_layer_creator_py(${layer_creator_gen_folder})
@@ -30,9 +30,7 @@ if(USE_CUDA)
   list(APPEND pre_build_srcs ${cuda_nvrtc_header_gen_folder}/cuda_nvrtc_headers.hpp)
 endif()
 
-if(BUILD_python OR USE_CUDA)
 add_library(pre_build STATIC ${pre_build_srcs})
-endif()
 
 caffe_default_properties(pre_build)
 set_target_properties(pre_build PROPERTIES LINKER_LANGUAGE CXX)
