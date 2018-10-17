@@ -46,6 +46,8 @@ if (NOT __GFLAGS_INCLUDED) # guard against multiple includes
       LOG_INSTALL 1
       )
 
+    target_link_libraries (gflags PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+
     set(GFLAGS_FOUND TRUE)
     set(GFLAGS_INCLUDE_DIRS ${gflags_INSTALL}/include)
     set(GFLAGS_LIBRARIES ${gflags_INSTALL}/lib/libgflags.a ${CMAKE_THREAD_LIBS_INIT})
