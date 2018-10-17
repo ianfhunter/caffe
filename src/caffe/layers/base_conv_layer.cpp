@@ -311,6 +311,8 @@ void BaseConvolutionLayer<Dtype, MItype, MOtype>::Reshape(
   }
 }
 
+#ifndef CPU_ONLY
+
 template <typename Dtype>
 void BaseConvolutionLayer<Dtype>::forward_gpu_gemm(const Dtype* input,
     const Dtype* weights, Dtype* output, bool skip_im2col) {
@@ -371,21 +373,8 @@ void BaseConvolutionLayer<Dtype>::backward_gpu_bias(Dtype* bias,
       input, bias_multiplier_.gpu_data(), 1., bias);
 }
 
-INSTANTIATE_CLASS(BaseConvolutionLayer);
+#endif //!CPU_ONLY
 
-INSTANTIATE_CLASS_3T_GUARDED(BaseConvolutionLayer, (half_fp), (half_fp),
-                             PROTO_TYPES);
-INSTANTIATE_CLASS_3T_GUARDED(BaseConvolutionLayer, (float), (float),
-                             PROTO_TYPES);
-INSTANTIATE_CLASS_3T_GUARDED(BaseConvolutionLayer, (double), (double),
-                             PROTO_TYPES);
-INSTANTIATE_CLASS_3T_GUARDED(BaseConvolutionLayer, (uint8_t), (uint8_t),
-                             PROTO_TYPES);
-INSTANTIATE_CLASS_3T_GUARDED(BaseConvolutionLayer, (uint16_t), (uint16_t),
-                             PROTO_TYPES);
-INSTANTIATE_CLASS_3T_GUARDED(BaseConvolutionLayer, (uint32_t), (uint32_t),
-                             PROTO_TYPES);
-INSTANTIATE_CLASS_3T_GUARDED(BaseConvolutionLayer, (uint64_t), (uint64_t),
-                             PROTO_TYPES);
+INSTANTIATE_CLASS(BaseConvolutionLayer);
 
 }  // namespace caffe
