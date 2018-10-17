@@ -30,7 +30,9 @@ if(USE_CUDA)
   list(APPEND pre_build_srcs ${cuda_nvrtc_header_gen_folder}/cuda_nvrtc_headers.hpp)
 endif()
 
+if(BUILD_python OR USE_CUDA)
 add_library(pre_build STATIC ${pre_build_srcs})
+endif()
 
 caffe_default_properties(pre_build)
 set_target_properties(pre_build PROPERTIES LINKER_LANGUAGE CXX)
