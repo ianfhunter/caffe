@@ -313,8 +313,8 @@ void BaseConvolutionLayer<Dtype, MItype, MOtype>::Reshape(
 
 #ifndef CPU_ONLY
 
-template <typename Dtype>
-void BaseConvolutionLayer<Dtype>::forward_gpu_gemm(const Dtype* input,
+template <typename Dtype, typename MItype, typename MOtype>
+void BaseConvolutionLayer<Dtype, MItype, MOtype>::forward_gpu_gemm(const Dtype* input,
     const Dtype* weights, Dtype* output, bool skip_im2col) {
   const Dtype* col_buff = input;
   if (!is_1x1_) {
@@ -331,16 +331,16 @@ void BaseConvolutionLayer<Dtype>::forward_gpu_gemm(const Dtype* input,
   }
 }
 
-template <typename Dtype>
-void BaseConvolutionLayer<Dtype>::forward_gpu_bias(Dtype* output,
+template <typename Dtype, typename MItype, typename MOtype>
+void BaseConvolutionLayer<Dtype, MItype, MOtype>::forward_gpu_bias(Dtype* output,
     const Dtype* bias) {
   caffe_gpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, num_output_,
       out_spatial_dim_, 1, (Dtype)1., bias, bias_multiplier_.gpu_data(),
       (Dtype)1., output);
 }
 
-template <typename Dtype>
-void BaseConvolutionLayer<Dtype>::backward_gpu_gemm(const Dtype* output,
+template <typename Dtype, typename MItype, typename MOtype>
+void BaseConvolutionLayer<Dtype, MItype, MOtype>::backward_gpu_gemm(const Dtype* output,
     const Dtype* weights, Dtype* input) {
   Dtype* col_buff = col_buffer_.mutable_gpu_data();
   if (is_1x1_) {
@@ -359,15 +359,15 @@ void BaseConvolutionLayer<Dtype>::backward_gpu_gemm(const Dtype* output,
 }
 
 template<typename Dtype, typename MItype, typename MOtype>
-void BaseConvolutionLayer<Dtype>::unlock_col_buffer() {
+void BaseConvolutionLayer<Dtype, MItype, MOtype>::unlock_col_buffer() {
   if (col_buffer_lock_id_ != -1) {
     shared_col_buffer_ = nullptr;
     this->device_->unlock_buffer(&col_buffer_lock_id_);
   }
 }
 
-template <typename Dtype>
-void BaseConvolutionLayer<Dtype>::backward_gpu_bias(Dtype* bias,
+template <typename Dtype, typename MItype, typename MOtype>
+void BaseConvolutionLayer<Dtype, MItype, MOtype>::backward_gpu_bias(Dtype* bias,
     const Dtype* input) {
   caffe_gpu_gemv<Dtype>(CblasNoTrans, num_output_, out_spatial_dim_, 1.,
       input, bias_multiplier_.gpu_data(), 1., bias);
