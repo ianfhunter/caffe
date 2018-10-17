@@ -34,8 +34,10 @@ if(BUILD_python OR USE_CUDA)
 add_library(pre_build STATIC ${pre_build_srcs})
 endif()
 
-caffe_default_properties(pre_build)
-set_target_properties(pre_build PROPERTIES LINKER_LANGUAGE CXX)
+if(BUILD_python)
+  caffe_default_properties(pre_build)
+  set_target_properties(pre_build PROPERTIES LINKER_LANGUAGE CXX)
+endif()
 
 # generate protobuf sources
 file(GLOB proto_files proto/*.proto)
