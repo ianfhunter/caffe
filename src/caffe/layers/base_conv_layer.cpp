@@ -359,7 +359,7 @@ void BaseConvolutionLayer<Dtype>::backward_gpu_gemm(const Dtype* output,
 }
 
 template<typename Dtype, typename MItype, typename MOtype>
-void BaseConvolutionLayer<Dtype, MItype, MOtype>::unlock_col_buffer() {
+void BaseConvolutionLayer<Dtype>::unlock_col_buffer() {
   if (col_buffer_lock_id_ != -1) {
     shared_col_buffer_ = nullptr;
     this->device_->unlock_buffer(&col_buffer_lock_id_);
