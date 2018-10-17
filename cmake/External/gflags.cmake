@@ -7,6 +7,8 @@ if (NOT __GFLAGS_INCLUDED) # guard against multiple includes
     set(GFLAGS_EXTERNAL FALSE)
   else()
     # gflags will use pthreads if it's available in the system, so we must link with it
+    set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads)
 
     # build directory
