@@ -2,6 +2,7 @@
 
 #include "caffe/filler.hpp"
 #include "caffe/layers/conv_quantized_layer.hpp"
+#include "dkm/include/dkm.hpp"
 
 namespace caffe {
 
@@ -37,6 +38,22 @@ void ConvolutionQuantizedLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& botto
   BaseConvolutionLayer<Dtype>::Reshape(bottom, top);
 }
 
+struct IsPresent {
+    IsPresent(float value) : value(value) {}
+    bool operator()(const std::array<float, 1>& arr ) {
+        auto v = std::find(std::begin(arr), std::end(arr), value);
+        return v != std::end(arr);
+    }
+private:
+    float value;
+};
+
+// bool IsPresent(const std::array<float, 1>& arr, double value)
+// {
+//   auto v = std::find(std::begin(arr), std::end(arr), value);
+//   return v != std::end(arr)
+// }
+
 template <typename Dtype>
 void ConvolutionQuantizedLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
@@ -51,7 +68,19 @@ void ConvolutionQuantizedLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& b
         unsigned no_centroids = this->layer_param_.convolution_quantized_param().centroids();
         const Dtype* centroids = this->centroids_.cpu_data();
         //TODO: call kmeans here! results in weight_quantized, and delete the line below
-        caffe_copy(count, weight, weight_quantized);
+
+        std::vector<std::array<float, 1>> initial_data(weight_quantized, weight_quantized + count);
+        auto clusters = dkm::kmeans_lloyd(initial_data, 16);
+
+        // where first is centroids, second is clusters
+
+        for (auto i = 0; i != count; i++){
+          auto v = weight_quantized[i];
+          auto it = std::find_if (std::get<1>(clusters).begin(), std::get<1>(clusters).end(), IsPresent(v));
+          weight_quantized[i] = *it;
+        }
+
+        // caffe_copy(count, weight, weight_quantized);
       } break;
 
       case(1): {
