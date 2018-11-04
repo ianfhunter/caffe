@@ -1,4 +1,5 @@
 #include <vector>
+#include <climits>
 
 #include "caffe/filler.hpp"
 #include "caffe/layers/conv_quantized_layer.hpp"
@@ -107,9 +108,20 @@ void ConvolutionQuantizedLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& b
 
 
 template <typename Dtype>
-void map_data(std::vector<std::array<float, 1>> centroids, caffe::Blob<Dtype>* data){
-  for( auto i : centroids){
-    // std::cout << i[0] << std::endl;
+void map_data(std::vector<std::array<float, 1>> centroids, caffe::Blob<Dtype>* blob){
+  auto wq = blob->mutable_cpu_data();
+  auto sz = blob->count();
+  for ( auto v = 0; v != sz ; v++ ){
+    double prev_centroid = LONG_MIN;
+    for ( auto centroid : centroids ){
+      auto curr_centroid = centroid[0];
+      if (v > prev_centroid && v < curr_centroid){
+        v = curr_centroid;
+        break;
+      }else{
+        prev_centroid = curr_centroid;
+      }
+    }
   }
 }
 
@@ -148,39 +160,6 @@ void ConvolutionQuantizedLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& 
     for (int i = 0; i < this->output_shape_.size(); i++) {
       outputs *= this->output_shape_[i];
     }
-<<<<<<< HEAD
-
-    Dtype* saliency_data = this->output_saliencies_.mutable_cpu_data();
-    caffe_mul(outputs, bottom_data, bottom_diff, saliency_data);
-    caffe_powx(outputs, saliency_data, (Dtype)2, saliency_data);
-
-    Dtype* centroids = this->centroids_.mutable_cpu_data();
-    (void)centroids;
-
-
-    // TODO: update the centroids here with the saliency data
-    Dtype* wq = this->weights_quantized_.mutable_cpu_data();
-
-    const int count = this->weights_quantized_.count();
-
-    std::vector<std::array<float, 1>> values;
-
-
-    for(auto i = 0; i != count; i++){
-      std::array<float, 1> tmp;
-      tmp = this->weights_quantized_.data()[i];
-      values.push_back(tmp);
-    }
-    // std::vector<std::array<Dtype, 1>> initial_data(wq, wq + count);
-    // auto clusters = dkm::kmeans_lloyd(initial_data, 16);  // Returns (Clusters, Data)
-    // auto means = std::get<0>(clusters);
-    // map_data(means, &this->weights_quantized_);
-
-
-
-    // caffe_copy(16, (Dtype *)(means), this->centroids_);
-
-=======
 
     switch (this->layer_param_.convolution_quantized_param().saliency()) {
       case (0): { // Fisher Information
@@ -216,7 +195,27 @@ void ConvolutionQuantizedLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& 
         // TODO: update the centroids here with the saliency data
       } break;
     }
->>>>>>> b1f0776d0dbcf527a72114bfa8d0250bd3accb66
+
+
+    Dtype* wq = this->weights_quantized_.mutable_cpu_data();
+
+    const int count = this->weights_quantized_.count();
+
+    std::vector<std::array<float, 1>> values;
+
+
+    for(auto i = 0; i != count; i++){
+
+      std::array<float, 1> tmp{0};
+      tmp[0] = wq[i];
+      values.push_back(tmp);
+
+    }
+    // std::vector<std::array<Dtype, 1>> initial_data(wq, wq + count);
+    auto clusters = dkm::kmeans_lloyd(values, 16);  // Returns (Clusters, Data)
+    auto means = std::get<0>(clusters);
+    map_data(means, &this->weights_quantized_);
+
   }
 }
 
