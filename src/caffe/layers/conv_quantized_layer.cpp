@@ -94,7 +94,6 @@ void ConvolutionQuantizedLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& b
         caffe_copy(count, weight, weight_quantized);
       } break;
     }
-
     for (int n = 0; n < this->num_; ++n) {
       this->forward_cpu_gemm(bottom_data + n * this->bottom_dim_, weight_quantized,
           top_data + n * this->top_dim_);
@@ -149,6 +148,7 @@ void ConvolutionQuantizedLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& 
     for (int i = 0; i < this->output_shape_.size(); i++) {
       outputs *= this->output_shape_[i];
     }
+<<<<<<< HEAD
 
     Dtype* saliency_data = this->output_saliencies_.mutable_cpu_data();
     caffe_mul(outputs, bottom_data, bottom_diff, saliency_data);
@@ -180,6 +180,43 @@ void ConvolutionQuantizedLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& 
 
     // caffe_copy(16, (Dtype *)(means), this->centroids_);
 
+=======
+
+    switch (this->layer_param_.convolution_quantized_param().saliency()) {
+      case (0): { // Fisher Information
+        Dtype* saliency_data = this->output_saliencies_.mutable_cpu_data();
+        caffe_mul(outputs, bottom_data, bottom_diff, saliency_data);
+        caffe_powx(outputs, saliency_data, (Dtype)2, saliency_data);
+
+        Dtype* centroids = this->centroids_.mutable_cpu_data();
+        // TODO: update the centroids here with the saliency data
+      } break;
+
+      case (1): { // Taylor Series
+        Dtype* saliency_data = this->output_saliencies_.mutable_cpu_data();
+        caffe_copy(outputs, bottom_data, saliency_data);
+
+        Dtype* centroids = this->centroids_.mutable_cpu_data();
+        // TODO: update the centroids here with the saliency data
+      } break;
+
+      case (2): { // Magnitude
+        Dtype* saliency_data = this->output_saliencies_.mutable_cpu_data();
+        caffe_copy(outputs, bottom_data, saliency_data);
+
+        Dtype* centroids = this->centroids_.mutable_cpu_data();
+        // TODO: update the centroids here with the saliency data
+      } break;
+
+      default: {
+        Dtype* saliency_data = this->output_saliencies_.mutable_cpu_data();
+        caffe_copy(outputs, bottom_data, saliency_data);
+
+        Dtype* centroids = this->centroids_.mutable_cpu_data();
+        // TODO: update the centroids here with the saliency data
+      } break;
+    }
+>>>>>>> b1f0776d0dbcf527a72114bfa8d0250bd3accb66
   }
 }
 
@@ -188,6 +225,5 @@ STUB_GPU(ConvolutionQuantizedLayer);
 #endif
 
 INSTANTIATE_CLASS(ConvolutionQuantizedLayer);
-//REGISTER_LAYER_CLASS(ConvolutionQuantized);
 
 }  // namespace caffe

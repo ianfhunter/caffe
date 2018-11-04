@@ -228,6 +228,9 @@ template <typename Dtype>
 void caffe_gpu_round(const int n, const Dtype* a, Dtype* y);
 
 template <typename Dtype>
+void caffe_gpu_and(const int n, const std::bitset<8*sizeof(Dtype)> m, const Dtype* a, Dtype* y);
+
+template <typename Dtype>
 void caffe_gpu_sqrt(const int n, const Dtype* a, Dtype* y);
 
 // caffe_gpu_rng_uniform with two arguments generates integers in the range
